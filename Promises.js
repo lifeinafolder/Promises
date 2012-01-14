@@ -74,7 +74,7 @@ Deferred.prototype.then = function(doneCbks,failCbks,progressCbks){
 Deferred.prototype.promise = function(obj){
 	var promise = obj || {};
 
-	promise.done = this.done;
+	promise.done = this.done.bind(this);
 	promise.fail = this.fail;
 	promise.progress = this.progress;
 	promise.state = this.state;
@@ -131,7 +131,7 @@ Promise.when = function(){
 		for(var i=0,il=args.length; i < il; i++){
 			var def = args[i];
 
-			var tmp = miniCbk.bind(i);
+			var tmp = miniCbk.bind(null,i);
 			def.done(tmp);
 			def.fail(failCbk);
 		}
