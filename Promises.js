@@ -10,8 +10,8 @@ var Deferred = function(){
 };
 
 Deferred.prototype.resolve = function(){
-	// unless this promise has been already resolved
-	if(this.state > 0){
+	// unless this promise has been already resolved/rejected
+	if(this.state === 0){
 		var args = Array.prototype.slice.call(arguments, 0);
 		//save the arguments for done 'callbacks' attached after resolution.
 		this.successParams = args;
@@ -23,8 +23,8 @@ Deferred.prototype.resolve = function(){
 };
 
 Deferred.prototype.reject = function(){
-	// unless this promise has been already rejected
-	if(this.state < 0){
+	// unless this promise has been already rejected/resolved
+	if(this.state === 0){
 		var args = Array.prototype.slice.call(arguments, 0);
 		this.failParams = args;
 		this.state = -1;
