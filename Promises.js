@@ -90,7 +90,7 @@ Deferred.prototype.pipe = function(fn){
 
 // parallel'ly execute async calls and return when all done.
 Promise.when = function(){
-	var args = Array.prototype.slice(arguments,0);
+	var args = Array.prototype.slice.call(arguments);
 	if (args.length < 2) {
 		// return its promise object if any, else call doneCallbacks immediately
 		if (args instanceof Deferred) {
@@ -109,7 +109,7 @@ Promise.when = function(){
 		var tasksLeft = args.length;
 		
 		var taskCbk = function(){
-			var response = Array.prototype.slice(arguments,0);
+			var response = Array.prototype.slice.call(arguments);
 			var ind = response.shift();
 			results[ind] = response;
 		
@@ -123,7 +123,7 @@ Promise.when = function(){
 		};
 		
 		var failCbk = function(){
-			var failArgs = Array.prototype.slice(arguments,0);
+			var failArgs = Array.prototype.slice.call(arguments);
 			master.reject(failArgs);
 		};
 		
@@ -131,7 +131,7 @@ Promise.when = function(){
 		for(var i=0,il=args.length; i < il; i++){
 			var def = args[i];
 
-			var tmp = miniCbk.bind(null,i);
+			var tmp = taskCbk.bind(null,i);
 			def.done(tmp);
 			def.fail(failCbk);
 		}
