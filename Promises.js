@@ -76,9 +76,9 @@ Deferred.prototype.promise = function(obj){
 
 	promise.done = this.done.bind(this);
 	promise.fail = this.fail.bind(this);
-	promise.progress = this.progress;
-	promise.state = this.state;
-	promise.pipe = this.pipe;
+	promise.progress = this.progress.bind(this);
+	promise.state = this.state.bind(this);
+	promise.pipe = this.pipe.bind(this);
 
 	return promise;
 };
