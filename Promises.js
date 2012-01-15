@@ -12,7 +12,7 @@ var Deferred = function(){
 Deferred.prototype.resolve = function(){
 	// unless this promise has been already resolved/rejected
 	if(this.state === 0){
-		var args = Array.prototype.slice.call(arguments, 0);
+		var args = Array.prototype.slice.call(arguments);
 		//save the arguments for done 'callbacks' attached after resolution.
 		this.successParams = args;
 		this.state = 1;
@@ -25,7 +25,7 @@ Deferred.prototype.resolve = function(){
 Deferred.prototype.reject = function(){
 	// unless this promise has been already rejected/resolved
 	if(this.state === 0){
-		var args = Array.prototype.slice.call(arguments, 0);
+		var args = Array.prototype.slice.call(arguments);
 		this.failParams = args;
 		this.state = -1;
 		this.failList.forEach(function(cbk){
@@ -35,7 +35,7 @@ Deferred.prototype.reject = function(){
 };
 
 Deferred.prototype.notify = function(){
-	var args = Array.prototype.slice.call(arguments, 0);
+	var args = Array.prototype.slice.call(arguments);
 	this.progressList.forEach(function(cbk){
 		cbk(args);
 	});
