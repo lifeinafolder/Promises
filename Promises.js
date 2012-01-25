@@ -2,7 +2,7 @@ var Promise = {};
 
 //Constructor
 var Deferred = function(){
-	this.state = 0;	// 0 : pending
+	this._state = 0;	// 0 : pending
 	this.failList = [];
 	this.successList = [];
 	this.progressList = [];
@@ -11,11 +11,11 @@ var Deferred = function(){
 
 Deferred.prototype.resolve = function(){
 	// unless this promise has been already resolved/rejected
-	if(this.state === 0){
+	if(this._state === 0){
 		var args = Array.prototype.slice.call(arguments);
 		//save the arguments for done 'callbacks' attached after resolution.
 		this.successParams = args;
-		this.state = 1;
+		this._state = 1;
 		this.successList.forEach(function(cbk){
 			cbk(args);
 		});
@@ -24,10 +24,10 @@ Deferred.prototype.resolve = function(){
 
 Deferred.prototype.reject = function(){
 	// unless this promise has been already rejected/resolved
-	if(this.state === 0){
+	if(this._state === 0){
 		var args = Array.prototype.slice.call(arguments);
 		this.failParams = args;
-		this.state = -1;
+		this._state = -1;
 		this.failList.forEach(function(cbk){
 			cbk(args);
 		});
@@ -42,12 +42,12 @@ Deferred.prototype.notify = function(){
 };
 
 Deferred.prototype.state = function(){
-	return this.state;
+	return this._state;
 };
 
 Deferred.prototype.progress = function(fn){
 	// add to progressList only if deferred is not resolved/rejected.
-	if(state === 0){
+	if(this._state === 0){
 		this.progressList.push(fn);
 	}
 	return this;
@@ -56,12 +56,12 @@ Deferred.prototype.progress = function(fn){
 Deferred.prototype.done = function(fn){
 	// if deferred is already resolved, return immediately with resolved params
 	// else add to queue of doneCallBacks to call when resolution happens
-	(this.state === 1) ? fn(this.successParams) : this.successList.push(fn);
+	(this._state === 1) ? fn(this.successParams) : this.successList.push(fn);
 	return this;
 };
 
 Deferred.prototype.fail = function(fn){
-	(this.state === -1) ? fn(this.failParams) : this.failList.push(fn);
+	(this._state === -1) ? fn(this.failParams) : this.failList.push(fn);
 	return this;
 };
 
