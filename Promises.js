@@ -80,17 +80,23 @@ Deferred.prototype.then = function(doneCbks,failCbks){
 	});
 };
 
-Deferred.prototype.promise = function(obj){
-	var promise = obj || {};
+Deferred.prototype.promise = (function(obj){
+	// Constructor for Promise object
+	function Promise(obj){
+		this.done = obj.done.bind(obj);
+		this.fail = obj.fail.bind(obj);
+		this.progress = obj.progress.bind(obj);
+		this.state = obj.state.bind(obj);
+		this.pipe = obj.pipe.bind(obj);
+		this.then = obj.then.bind(obj);
+	}
 
-	promise.done = this.done.bind(this);
-	promise.fail = this.fail.bind(this);
-	promise.progress = this.progress.bind(this);
-	promise.state = this.state.bind(this);
-	promise.pipe = this.pipe.bind(this);
+	return function(){
+		var promise = new Promise(this);
+		return promise;
+	};
 
-	return promise;
-};
+}());
 
 // serially bind async calls.
 Deferred.prototype.pipe = function(fn){
@@ -101,14 +107,14 @@ Deferred.prototype.pipe = function(fn){
 Promise.when = function(){
 	var args = Array.prototype.slice.call(arguments);
 	if (args.length < 2) {
-		// return its promise object if any, else call doneCallbacks immediately
-		if (args instanceof Deferred) {
-			return args.promise();
+		// return the promise object if any, else call doneCallbacks immediately
+		if (args[0].constructor.name === 'Promise') {
+			return args[0];
 		}
 		else {
 			// its not a deferred object. treat it as a resolved deferred then
 			var d = new Deferred();
-			d.resolve(args);
+			d.resolve(args[0]);
 			return d.promise();
 		}
 	}
