@@ -146,6 +146,12 @@ Promise.when = function(){
 		for(var i=0,il=args.length; i < il; i++){
 			var def = args[i];
 
+			if(def.constructor.name !== 'Promise'){
+				var d = new Deferred();
+				d.resolve(args[i]);
+				def = d.promise();
+			}
+
 			var tmp = taskCbk.bind(null,i);
 			def.done(tmp);
 			def.fail(failCbk);
