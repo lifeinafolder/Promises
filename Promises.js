@@ -65,10 +65,19 @@ Deferred.prototype.fail = function(fn){
 	return this;
 };
 
-Deferred.prototype.then = function(doneCbks,failCbks,progressCbks){
-	this.successList.concat(doneCbks);
-	this.failList.concat(failCbks);
-	this.progressList.concat(progressCbks);
+Deferred.prototype.then = function(doneCbks,failCbks){
+	var self = this;
+
+	doneCbks = [].concat(doneCbks);
+	failCbks = [].concat(failCbks);
+
+	doneCbks.forEach(function(cbk){
+		self.done(cbk);
+	});
+
+	failCbks.forEach(function(cbk){
+		self.fail(cbk);
+	});
 };
 
 Deferred.prototype.promise = function(obj){
@@ -107,26 +116,26 @@ Promise.when = function(){
 		var master = new Deferred();
 		var results = [];
 		var tasksLeft = args.length;
-		
+
 		var taskCbk = function(){
 			var response = Array.prototype.slice.call(arguments);
 			var ind = response.shift();
 			results[ind] = response;
-		
+
 			// Another task completed.
 			tasksLeft--;
-		
+
 			// If all tasks are completed, resolve master deferred.
 			if(tasksLeft ===0){
 				master.resolve(results);
 			}
 		};
-		
+
 		var failCbk = function(){
 			var failArgs = Array.prototype.slice.call(arguments);
 			master.reject(failArgs);
 		};
-		
+
 		// Hold resolved result of each deferred object in args.
 		for(var i=0,il=args.length; i < il; i++){
 			var def = args[i];
@@ -136,6 +145,6 @@ Promise.when = function(){
 			def.fail(failCbk);
 		}
 
-		return master.promise();		
+		return master.promise();
 	}
 };
