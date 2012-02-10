@@ -40,9 +40,17 @@ describe('Promises',function(){
 			expect(result1+result2).toEqual('Yay1Yay2');
 		});
 	});
-	// 
-	// var p = Promise.when(async(),{a:5});
-	// p.then(function(result){
-	//     console.log(result);
-	// });
+
+	it("When", function(){
+		var result;
+		var p = Promise.when(promise,{a:5});
+		p.then(function(res){
+			console.log(res);
+			result = 'parallel';
+		});
+		waits(2000);
+		runs(function(){
+			expect(result).toEqual('parallel')
+		})
+	});
 });
