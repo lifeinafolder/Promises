@@ -6,7 +6,7 @@ function async() {
 		for(var i=args.length;i--;){
 			sum+=args[i];
 		}
-	  dfd.resolve(5 + sum);
+		dfd.resolve(5 + sum);
 	}, 1000);
 	return dfd.promise();
 }
