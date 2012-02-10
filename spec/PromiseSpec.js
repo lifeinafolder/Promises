@@ -12,7 +12,7 @@ describe('Promises',function(){
 	beforeEach(function(){
 		promise = async();
 	});
-	
+
 	it("Single resolution",function(){
 		var result;
 		promise.done(function(res){
@@ -23,7 +23,7 @@ describe('Promises',function(){
 			expect(result).toEqual('Yay');
 		});
 	});
-	
+
 	it("Multiple resolution",function(){
 		var result1,result2;
 		promise.done([
@@ -34,7 +34,7 @@ describe('Promises',function(){
 				result2 = res + 2;
 			}
 		]);
-		
+
 		waits(1000);
 		runs(function(){
 			expect(result1+result2).toEqual('Yay1Yay2');
@@ -48,9 +48,24 @@ describe('Promises',function(){
 			console.log(res);
 			result = 'parallel';
 		});
-		waits(2000);
+		waits(1000);
 		runs(function(){
 			expect(result).toEqual('parallel')
+		})
+	});
+
+	it("Pipe", function(){
+		var result;
+		var p = promise.pipe(function(res){
+			return res + '|Piped';
+		});
+		p.then(function(res){
+			console.log(res);
+			result = res;
+		});
+		waits(1000);
+		runs(function(){
+			expect(result).toEqual('Yay|Piped')
 		})
 	});
 });
