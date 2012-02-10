@@ -1,7 +1,12 @@
 function async() {
+	var args = Array.prototype.slice.call(arguments);
   var dfd = new Deferred();
   window.setTimeout(function() {
-    dfd.resolve('Yay');
+		var sum = 0;
+		for(var i=args.length;i--;){
+			sum+=args[i];
+		}
+    dfd.resolve(5 + sum);
   }, 1000);
   return dfd.promise();
 }
@@ -20,7 +25,7 @@ describe('Promises',function(){
 		});
 		waits(1000);
 		runs(function(){
-			expect(result).toEqual('Yay');
+			expect(result).toEqual(5);
 		});
 	});
 
@@ -28,44 +33,60 @@ describe('Promises',function(){
 		var result1,result2;
 		promise.done([
 			function(res){
-				result1 = res + 1;
+				result1 = res + 1;//6
 			},
 			function(res){
-				result2 = res + 2;
+				result2 = res + 2;//7
 			}
 		]);
 
 		waits(1000);
 		runs(function(){
-			expect(result1+result2).toEqual('Yay1Yay2');
+			expect(result1+result2).toEqual(13);
 		});
 	});
 
 	it("When", function(){
 		var result;
-		var p = Promise.when(promise,{a:5});
+		var p2 = async(10);
+		var p = Promise.when(promise,p2);
 		p.then(function(res){
-			console.log(res);
-			result = 'parallel';
+			result = res[0][0] + res[1][0];
 		});
 		waits(1000);
 		runs(function(){
-			expect(result).toEqual('parallel')
-		})
+			expect(result).toEqual(20);
+		});
 	});
 
 	it("Pipe", function(){
 		var result;
 		var p = promise.pipe(function(res){
-			return res + '|Piped';
+			return res + 2;
 		});
 		p.then(function(res){
-			console.log(res);
 			result = res;
 		});
 		waits(1000);
 		runs(function(){
-			expect(result).toEqual('Yay|Piped')
-		})
+			expect(result).toEqual(7);
+		});
+	});
+
+	it("Pipe-Chaining", function(){
+		var result;
+		var p = promise.pipe(function(res){
+			p2 = async(res);
+			return p2;
+		});
+		p.then(function(res){
+			result = res;
+		});
+
+		//wait 2 seconds now as we are running two async calls in serial
+		waits(2000);
+		runs(function(){
+			expect(result).toEqual(10);
+		});
 	});
 });
