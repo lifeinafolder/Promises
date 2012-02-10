@@ -26,7 +26,7 @@ Deferred.prototype.resolve = function(){
 		else{
 			// Invoke doneCallbacks with successParams
 			this.successList.forEach(function(cbk){
-				cbk.apply(null,this.successParams);
+				cbk.apply(null,[].concat(this.successParams));
 			},this);
 		}
 	}
@@ -46,7 +46,7 @@ Deferred.prototype.reject = function(){
 		}
 		else{
 			this.failList.forEach(function(cbk){
-				cbk.apply(null,this.failParams);
+				cbk.apply(null,[].concat(this.failParams));
 			},this);
 		}
 	}
