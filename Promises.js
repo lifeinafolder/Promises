@@ -71,15 +71,31 @@ Deferred.prototype.progress = function(fn){
 	return this;
 };
 
-Deferred.prototype.done = function(fn){
+Deferred.prototype.done = function(fns){
+	fns = [].concat(fns);
 	// if deferred is already resolved, return immediately with resolved params
 	// else add to queue of doneCallBacks to call when resolution happens
-	(this._state === 1) ? fn(this.successParams) : this.successList.push(fn);
+	if(this._state === 1){
+		fns.forEach(function(fn){
+			fn(this.successParams);
+		});
+	}
+	else{
+		this.successList = this.successList.concat(fns);
+	}
 	return this;
 };
 
-Deferred.prototype.fail = function(fn){
-	(this._state === -1) ? fn(this.failParams) : this.failList.push(fn);
+Deferred.prototype.fail = function(fns){
+	fns = [].concat(fns);
+	if(this._state === -1){
+		fns.forEach(function(fn){
+			fn(this.failParams);
+		});
+	}
+	else{
+		this.failList = this.failList.concat(fns);
+	}
 	return this;
 };
 
