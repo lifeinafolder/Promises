@@ -1,14 +1,14 @@
 function async() {
 	var args = Array.prototype.slice.call(arguments);
-  var dfd = new Deferred();
-  window.setTimeout(function() {
+	var dfd = new Deferred();
+	window.setTimeout(function() {
 		var sum = 0;
 		for(var i=args.length;i--;){
 			sum+=args[i];
 		}
-    dfd.resolve(5 + sum);
-  }, 1000);
-  return dfd.promise();
+	  dfd.resolve(5 + sum);
+	}, 1000);
+	return dfd.promise();
 }
 
 describe('Promises',function(){
