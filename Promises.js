@@ -6,31 +6,49 @@ var Deferred = function(){
 	this.failList = [];
 	this.successList = [];
 	this.progressList = [];
-	this.pipeList = [];
 };
 
 Deferred.prototype.resolve = function(){
 	// unless this promise has been already resolved/rejected
 	if(this._state === 0){
-		var args = Array.prototype.slice.call(arguments);
-		//save the arguments for done 'callbacks' attached after resolution.
-		this.successParams = args;
 		this._state = 1;
-		this.successList.forEach(function(cbk){
-			cbk(args);
-		});
+
+		var args = Array.prototype.slice.call(arguments);
+		// Save the resolved results for done 'callbacks' attached after resolution.
+		// If their exists a filter, pass the resolved results through the filter.
+		this.successParams = this.doneFilter ? this.doneFilter.apply(this,args) : args;
+
+		//if filter function returned a promise itself
+		// add our list of callback fns to the returned promise list
+		if(this.successParams.constructor.name === 'Promise'){
+			this.successParams.done(this.successList);
+		}
+		else{
+			// Invoke doneCallbacks with successParams
+			this.successList.forEach(function(cbk){
+				cbk.apply(null,this.successParams);
+			},this);
+		}
 	}
 };
 
 Deferred.prototype.reject = function(){
 	// unless this promise has been already rejected/resolved
 	if(this._state === 0){
-		var args = Array.prototype.slice.call(arguments);
-		this.failParams = args;
 		this._state = -1;
-		this.failList.forEach(function(cbk){
-			cbk(args);
-		});
+		var args = Array.prototype.slice.call(arguments);
+		this.failParams = this.failFilter ? this.failFilter.apply(this,args) : args;
+
+		//if filter function returned a promise itself
+		// add our list of callback fns to the returned promise list
+		if(this.failParams.constructor.name === 'Promise'){
+			this.failParams.fail(this.failList);
+		}
+		else{
+			this.failList.forEach(function(cbk){
+				cbk.apply(null,this.failParams);
+			},this);
+		}
 	}
 };
 
@@ -99,8 +117,10 @@ Deferred.prototype.promise = (function(obj){
 }());
 
 // serially bind async calls.
-Deferred.prototype.pipe = function(fn){
-	//TODO
+Deferred.prototype.pipe = function(doneFilter,failFilter){
+	this.doneFilter = doneFilter;
+	this.failFilter = failFilter;
+	return this.promise();
 };
 
 // parallel'ly execute async calls and return when all done.
