@@ -75,11 +75,14 @@ describe('Promises',function(){
 
 	it("Pipe-Chaining", function(){
 		var result;
-		var p = promise.pipe(function(res){
+		promise.pipe(function(res){
 			p2 = async(res);
 			return p2;
 		});
-		p.then(function(res){
+
+		// When the original promise is resolved, resolution is piped through
+		// and then received within done
+		promise.done(function(res){
 			result = res;
 		});
 
