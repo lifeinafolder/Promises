@@ -105,4 +105,24 @@ describe('Promises',function(){
 			expect(result).toEqual(10);
 		});
 	});
+
+	it("When-Pipe Mixed", function(){
+		var result;
+		promise.pipe(function(x){
+			var p2 = async(x);
+			return p2;
+		})
+
+		var p3 = async(10);
+
+		// resolve when to async calles piped together and 3rd async call finish in parallel
+		Promise.when(promise,p3).then(function(res){
+			result = res[0][0] + res[1][0];
+		})
+
+		waits(2000);
+		runs(function(){
+			expect(result).toEqual(25);
+		})
+	});
 });
