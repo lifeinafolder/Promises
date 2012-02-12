@@ -59,6 +59,19 @@ describe('Promises',function(){
 		});
 	});
 
+	it("When w/(sync,async) fn pair", function(){
+		var result;
+		var p2 = function(){return {a:10};};
+		var p = Promise.when(promise,p2());
+		p.then(function(res){
+			result = res[0][0] + res[1][0].a;
+		});
+		waits(1000);
+		runs(function(){
+			expect(result).toEqual(15);
+		});
+	});
+
 	it("Pipe", function(){
 		var result;
 		var p = promise.pipe(function(res){
