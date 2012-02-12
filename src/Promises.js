@@ -77,7 +77,7 @@ Deferred.prototype.done = function(fns){
 	// else add to queue of doneCallBacks to call when resolution happens
 	if(this._state === 1){
 		fns.forEach(function(fn){
-			fn(this.successParams);
+			fn.apply(null,this.successParams);
 		},this);
 	}
 	else{
@@ -90,7 +90,7 @@ Deferred.prototype.fail = function(fns){
 	fns = [].concat(fns);
 	if(this._state === -1){
 		fns.forEach(function(fn){
-			fn(this.failParams);
+			fn.apply(null,this.failParams);
 		},this);
 	}
 	else{
