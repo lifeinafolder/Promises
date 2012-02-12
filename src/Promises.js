@@ -78,7 +78,7 @@ Deferred.prototype.done = function(fns){
 	if(this._state === 1){
 		fns.forEach(function(fn){
 			fn(this.successParams);
-		});
+		},this);
 	}
 	else{
 		this.successList = this.successList.concat(fns);
@@ -91,7 +91,7 @@ Deferred.prototype.fail = function(fns){
 	if(this._state === -1){
 		fns.forEach(function(fn){
 			fn(this.failParams);
-		});
+		},this);
 	}
 	else{
 		this.failList = this.failList.concat(fns);
